@@ -1,125 +1,294 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart_test/bar_chart_sample1.dart';
+import 'package:fl_chart_test/bar_chart_sample4.dart';
 import 'package:flutter/material.dart';
+
+import 'bar_chart_samlpe3.dart';
+import 'bar_chart_sample2.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      title: 'fl_chart sample',
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  /// 色は単色が良かったので、グラデーションは使用しない
+  // List<Color> gradientColors = [
+  //   const Color(0xff23b6e6),
+  //   const Color(0xff02d39a),
+  // ];
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('fl_chart sample'),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+        // グラフ表示画面(大枠)の設定
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: 1.414,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(18),
+                      ),
+                      color: Color(0xff232d37),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 18,
+                        left: 12,
+                        top: 24,
+                        bottom: 8,
+                      ),
+                      child: LineChart(
+                        mainData(),
+                      ),
+                    ),
+                  ),
+                ),
+                BarChartSample1(),
+                const BarChartSample2(),
+                const BarChartSample3(),
+                BarChartSample4()
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  LineChartData mainData() {
+    return LineChartData(
+      // タッチ操作時の設定
+      lineTouchData: const LineTouchData(
+        handleBuiltInTouches: true, // タッチ時のアクションの有無
+        getTouchedSpotIndicator: defaultTouchedIndicators, // インジケーターの設定
+        // ツールチップの設定
+        touchTooltipData: LineTouchTooltipData(
+          getTooltipItems: defaultLineTooltipItem, // 表示文字設定
+          tooltipBgColor: Colors.white, // 背景の色
+          tooltipRoundedRadius: 2.0, // 角丸
+        ),
+      ),
+
+      // 背景のグリッド線の設定
+      gridData: FlGridData(
+        show: true,
+        // 背景のグリッド線の有無
+        drawVerticalLine: true,
+        // 水平方向のグリッド線の有無
+        horizontalInterval: 1.0,
+        // 背景グリッドの横線間隔
+        verticalInterval: 1.0,
+        // 背景グリッドの縦線間隔
+        // 背景グリッドの横線設定
+        getDrawingHorizontalLine: (value) {
+          return const FlLine(
+            color: Color(0xff37434d),
+            strokeWidth: 1.0, // 線の太さ
+          );
+        },
+        // 背景グリッドの縦線設定
+        getDrawingVerticalLine: (value) {
+          return const FlLine(
+            color: Color(0xff37434d),
+            strokeWidth: 1.0, // 線の太さ
+          );
+        },
+      ),
+
+      // グラフのタイトル設定
+      titlesData: FlTitlesData(
+        show: true,
+        // タイトルの有無
+        rightTitles: const AxisTitles(),
+        topTitles: const AxisTitles(),
+        // 下側のタイトル設定
+        bottomTitles: AxisTitles(
+          // タイトル名
+          axisNameWidget: const Text(
+            "[曜日]",
+            style: TextStyle(
+              color: Color(0xff68737d),
+            ),
+          ),
+          axisNameSize: 20.0, //タイトルの表示エリアの幅
+          // サイドタイトルの設定
+          sideTitles: SideTitles(
+            showTitles: true, // サイドタイトルの有無
+            interval: 1.0, // サイドタイトルの表示間隔
+            reservedSize: 40.0, // サイドタイトルの表示エリアの幅
+            getTitlesWidget: bottomTitleWidgets, // サイドタイトルの表示内容
+          ),
+        ),
+        leftTitles: AxisTitles(
+          axisNameWidget: const Text(
+            "【値】",
+            style: TextStyle(
+              color: Color(0xff68737d),
+            ),
+          ),
+          axisNameSize: 28.0, //タイトルの表示エリアの幅
+          sideTitles: SideTitles(
+            showTitles: true, // サイドタイトルの表示・非表示
+            interval: 1.0, // サイドタイトルの表示間隔
+            reservedSize: 42.0, // サイドタイトルの表示エリアの幅
+            getTitlesWidget: leftTitleWidgets,
+          ),
+        ),
+      ),
+
+      // グラフの外枠線
+      borderData: FlBorderData(
+        show: true, // 外枠線の有無
+        border: Border.all(
+          color: const Color(0xff37434d),
+        ),
+      ),
+
+      // グラフのx軸y軸のの表示数(最大値)
+      minX: 0.0,
+      maxX: 10.0,
+      minY: 0.0,
+      maxY: 6.0,
+
+      // チャート線の設定
+      lineBarsData: [
+        LineChartBarData(
+          // 表示する座標のリスト
+          spots: const [
+            FlSpot(0.0, 3.0),
+            FlSpot(1.0, 2.0),
+            FlSpot(2.0, 5.0),
+            FlSpot(3.0, 3.0),
+            FlSpot(4.0, 4.0),
+            FlSpot(5.0, 3.0),
+            FlSpot(6.0, 4.0),
+          ],
+          isCurved: true,
+          // チャート線を曲線にするか折れ線にするか
+          /// グラデーションは使用しない
+          // gradient: LinearGradient(
+          //   colors: gradientColors,
+          // ),
+          barWidth: 1.0,
+          // チャート線幅
+          isStrokeCapRound: false,
+          // チャート線の開始と終了がQubicかRoundか（？）
+          dotData: FlDotData(
+            show: true, // 座標にドット表示の有無
+            // ドットの詳細設定
+            getDotPainter: (spot, percent, barData, index) =>
+                // ドットの詳細設定
+                FlDotCirclePainter(
+              radius: 2.0,
+              color: Colors.green,
+              strokeWidth: 2.0,
+              strokeColor: Colors.greenAccent,
+            ),
+          ),
+          // チャート線下部に色を付ける場合の設定
+          belowBarData: BarAreaData(
+            show: false, // チャート線下部の表示の有無
+
+            /// グラデーションは使用しない
+            // gradient: LinearGradient(
+            //   colors: gradientColors
+            //       .map((color) => color.withOpacity(0.3))
+            //       .toList(),
+            // ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      color: Color(0xff68737d),
+      fontWeight: FontWeight.bold,
+      fontSize: 16.0,
+    );
+    Widget text;
+    switch (value.toInt()) {
+      case 0:
+        text = const Text('月', style: style);
+        break;
+      case 1:
+        text = const Text('火', style: style);
+        break;
+      case 2:
+        text = const Text('水', style: style);
+        break;
+      case 3:
+        text = const Text('木', style: style);
+        break;
+      case 4:
+        text = const Text('金', style: style);
+        break;
+      case 5:
+        text = const Text('土', style: style);
+        break;
+      case 6:
+        text = const Text('日', style: style);
+        break;
+      default:
+        text = const Text('', style: style);
+        break;
+    }
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
+    );
+  }
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      color: Color(0xff68737d),
+      fontWeight: FontWeight.bold,
+      fontSize: 15.0,
+    );
+    String text;
+    switch (value.toInt()) {
+      case 1:
+        text = '10';
+        break;
+      case 3:
+        text = '30';
+        break;
+      case 5:
+        text = '50';
+        break;
+      default:
+        return Container();
+    }
+    return Text(text, style: style, textAlign: TextAlign.left);
   }
 }
